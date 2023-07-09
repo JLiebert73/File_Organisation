@@ -94,37 +94,4 @@ def compile_metadata(directory, file_extension):
     return metadata
 
 
-# Example usage:
-if __name__ == "__main__":
-    path = os.path.abspath(os.path.join(os.getcwd(), '..', '..'))
-    directory = os.path.join(path, 'Text')
 
-    extension = input("Enter the file extension to retrieve metadata for (e.g., .jpg, .pdf, .docx): ")
-
-    metadata = compile_metadata(directory, extension)
-
-    if metadata:
-        headers = ['File', 'Type']
-        if extension == '.pdf':
-            headers.extend(['Num Pages', 'Title', 'Author', 'Subject'])
-        elif extension in ['.docx', '.doc']:
-            headers.extend(['Title', 'Author', 'Created'])
-        elif extension == '.xlsx':
-            headers.extend(['Title', 'Author', 'Created'])
-        elif extension == '.pptx':
-            headers.extend(['Title', 'Author', 'Created'])
-        elif extension == '.png':
-            headers.extend(['Format', 'Size', 'Mode'])
-        elif extension == '.txt':
-            headers.append('Content')
-
-        data = []
-        for item in metadata:
-            file_name = os.path.basename(item[1])
-            file_data = [file_name, item[0]]
-            file_data.extend(item[2:])
-            data.append(file_data)
-
-        print(tabulate(data, headers=headers, tablefmt='grid'))
-    else:
-        print('No files with the specified extension found in the directory.')
