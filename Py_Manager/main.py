@@ -3,7 +3,7 @@ from tabulate import tabulate
 from file_manager.sort import move_files
 from file_manager.revert import move_files as revert_files
 from file_manager.metadata import compile_metadata
-from file_manager.compress import compress_text
+from file_manager.compress import compress_text, decompress_text
 
 def main():
     current_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
@@ -15,6 +15,7 @@ def main():
     print("2. Revert file movements")
     print("3. Extract file metadata")
     print("4. Compress text")
+    print("5. Decompress text")
 
     option = input("Enter the option number: ")
 
@@ -59,6 +60,9 @@ def main():
     elif option == "4":
         file_path = input("Enter the file path to compress (with .txt extension): ")
         compress_text(file_path)
+    elif option == "5":
+        file_path = input("Enter the file path to decompress (with .bin extension): ")
+        decompress_text(file_path)
     else:
         print("Invalid option. Please try again.")
 
