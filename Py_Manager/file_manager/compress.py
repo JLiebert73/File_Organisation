@@ -1,5 +1,6 @@
 import heapq
 import os
+import pickle  
 
 class HuffmanNode:
     def __init__(self, char, frequency):
@@ -62,6 +63,7 @@ def compress_text(input_file):
         encoded_data += encoding_table[char]
 
     padding = 8 - len(encoded_data) % 8
+    huffman_tree_pickle = pickle.dumps(huffman_tree)
     encoded_data += "0" * padding
 
     byte_data = bytearray()
@@ -71,6 +73,44 @@ def compress_text(input_file):
 
     with open(output_file, "wb") as file:
         file.write(bytes([padding]))
+        file.write(len(huffman_tree_pickle).to_bytes(4, byteorder='big'))
+        file.write(huffman_tree_pickle)
         file.write(byte_data)
 
     print("File compressed successfully!")
+
+def decompress_text(input_file):
+    with open(input_file, "rb") as file:
+        padding = int.from_bytes(file.read(1), byteorder='big')
+        huffman_tree_length = int.from_bytes(file.read(4), byteorder='big')
+        huffman_tree_pickle = file.read(huffman_tree_length)
+        reconstructed_tree = pickle.loads(huffman_tree_pickle)
+        compressed_data = file.read()
+
+    decoded_data = decode_data(compressed_data, reconstructed_tree, padding)
+
+    output_file = os.path.splitext(input_file)[0] + "_decompressed.txt"
+    with open(output_file, "w") as file:
+        file.write(decoded_data)
+
+    print("File decompressed successfully!")
+
+def decode_data(compressed_data, huffman_tree, padding):
+    decoded_data = ""
+    current_node = huffman_tree
+
+    compressed_index = 0
+    while compressed_index < len(compressed_data) - padding:
+        bit = int(compressed_data[compressed_index])
+        if bit == 0:
+            current_node = current_node.left
+        else:
+            current_node = current_node.right
+
+        if current_node.char:
+            decoded_data += current_node.char
+            current_node = huffman_tree
+
+        compressed_index += 1
+
+    return decoded_data
