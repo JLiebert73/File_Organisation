@@ -11,6 +11,7 @@ Py_Manager is a file management tool developed using Python, designed to simplif
 - **File Metadata Extraction:** Py_Manager offers the functionality to extract metadata from files. It supports various file formats such as PDF, DOCX, XLSX, PPTX, PNG, and TXT. You can retrieve information such as the number of pages, title, author, creation date, format, size, and content from compatible files.
 
 - **Text Compression:** Py_Manager includes a text compression feature based on the Huffman coding algorithm. It compresses text files, reducing their size while preserving the original content. The compressed files are saved with a `.huff` extension.
+- **Semantic Layer:** Py_Manager includes a semantic search feature that matches query to documents to return a set of top 5 semantically closest options using TF_IDF measure.
 
 ## Usage
 
