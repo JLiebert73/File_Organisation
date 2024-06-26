@@ -4,6 +4,7 @@ from file_manager.sort import move_files
 from file_manager.revert import move_files as revert_files
 from file_manager.metadata import compile_metadata
 from file_manager.compress import compress_text, decompress_text
+from file_manager.tf_idf import tfidf_search
 
 def main():
     current_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
@@ -16,6 +17,7 @@ def main():
     print("3. Extract file metadata")
     print("4. Compress text")
     print("5. Decompress text")
+    print("6. Semantic Search")
 
     option = input("Enter the option number: ")
 
@@ -63,9 +65,21 @@ def main():
     elif option == "5":
         file_path = input("Enter the file path to decompress (with .bin extension): ")
         decompress_text(file_path)
+    elif option == "6":
+        term = input("Enter a term to search semantically: ")
+        print("Searching for documents containing the term semantically...")
+
+        results = tfidf_search(text_dir, term)
+
+        if results:
+            headers = ['File', 'Similarity Score']
+            data = [(result[0], f"{result[1]:.4f}") for result in results]
+            print(tabulate(data, headers=headers, tablefmt='grid'))
+        else:
+            print(f"No documents found containing the term '{term}'.")
+
     else:
         print("Invalid option. Please try again.")
-
 
 if __name__ == "__main__":
     main()
