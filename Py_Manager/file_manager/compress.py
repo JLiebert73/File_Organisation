@@ -1,6 +1,8 @@
 import heapq
 import os
-import pickle  
+import pickle
+import multiprocessing
+from collections import Counter
 
 class HuffmanNode:
     def __init__(self, char, frequency):
@@ -13,13 +15,7 @@ class HuffmanNode:
         return self.frequency < other.frequency
 
 def build_frequency_table(data):
-    frequency_table = {}
-    for char in data:
-        if char in frequency_table:
-            frequency_table[char] += 1
-        else:
-            frequency_table[char] = 1
-    return frequency_table
+    return Counter(data)
 
 def build_huffman_tree(frequency_table):
     heap = []
@@ -48,19 +44,33 @@ def build_encoding_table(huffman_tree):
     traverse(huffman_tree, "")
     return encoding_table
 
+def compress_chunk(data_chunk, encoding_table):
+    encoded_data = ""
+    for char in data_chunk:
+        encoded_data += encoding_table[char]
+    return encoded_data
+
 def compress_text(input_file):
     output_file = os.path.splitext(input_file)[0] + ".huff"
 
     with open(input_file, "r") as file:
         data = file.read().rstrip()
 
-    frequency_table = build_frequency_table(data)
+    num_chunks = multiprocessing.cpu_count()
+    chunk_size = len(data) // num_chunks
+    data_chunks = [data[i:i + chunk_size] for i in range(0, len(data), chunk_size)]
+    with multiprocessing.Pool() as pool:
+        frequency_tables = pool.map(build_frequency_table, data_chunks)
+    
+    frequency_table = sum(frequency_tables, Counter())
+
     huffman_tree = build_huffman_tree(frequency_table)
     encoding_table = build_encoding_table(huffman_tree)
 
-    encoded_data = ""
-    for char in data:
-        encoded_data += encoding_table[char]
+    with multiprocessing.Pool() as pool:
+        encoded_chunks = pool.starmap(compress_chunk, [(chunk, encoding_table) for chunk in data_chunks])
+    
+    encoded_data = ''.join(encoded_chunks)
 
     padding = 8 - len(encoded_data) % 8
     huffman_tree_pickle = pickle.dumps(huffman_tree)
@@ -100,9 +110,14 @@ def decode_data(compressed_data, huffman_tree, padding):
     current_node = huffman_tree
 
     compressed_index = 0
-    while compressed_index < len(compressed_data) - padding:
-        bit = int(compressed_data[compressed_index])
-        if bit == 0:
+    bit_string = ""
+    for byte in compressed_data:
+        bit_string += f"{byte:08b}"
+
+    bit_string = bit_string[:-padding]  # Remove padding bits
+
+    for bit in bit_string:
+        if bit == '0':
             current_node = current_node.left
         else:
             current_node = current_node.right
@@ -110,7 +125,5 @@ def decode_data(compressed_data, huffman_tree, padding):
         if current_node.char:
             decoded_data += current_node.char
             current_node = huffman_tree
-
-        compressed_index += 1
 
     return decoded_data
