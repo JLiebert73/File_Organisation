@@ -1,5 +1,6 @@
 import os
 from .utils import shift
+from shutil import move
 
 
 def revert_file(source_path, destination_path):
