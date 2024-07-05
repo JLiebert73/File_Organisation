@@ -77,7 +77,6 @@ def main():
             print(tabulate(data, headers=headers, tablefmt='grid'))
         else:
             print(f"No documents found containing the term '{term}'.")
-
     else:
         print("Invalid option. Please try again.")
 
