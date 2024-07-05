@@ -70,4 +70,26 @@ def move_files(source_dir, destination_dir):
                 shift(source_path, destination_path)
                 counts['Folders'] += 1
 
-        for future in concurrent.futures.as_completed
+        for future in concurrent.futures.as_completed(futures):
+            category = future.result()
+            counts[category] += 1
+
+    # Print the summary of files moved
+    print("\n\nAll files sorted successfully!")
+    print("Folders moved:", counts['Folders'])
+    print("Images moved:", counts['Images'])
+    print("Text moved:", counts['Text'])
+    print("Videos moved:", counts['Videos'])
+    print("Code moved:", counts['Code'])
+    print("Others moved:", counts['Others'])
+
+
+def main():
+    source_dir = os.getcwd()
+    destination_dir = os.getcwd()
+
+    move_files(source_dir, destination_dir)
+
+
+if __name__ == "__main__":
+    main()
