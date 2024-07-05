@@ -3,6 +3,7 @@ import os
 import pickle
 import multiprocessing
 from collections import Counter
+from shutil import move
 
 class HuffmanNode:
     def __init__(self, char, frequency):
