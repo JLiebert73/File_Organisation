@@ -1,7 +1,7 @@
 import os
 import concurrent.futures
 from .utils import create_directory, shift
-from .metadata import extract_image_metadata, extract_pdf_metadata, extract_docx_metadata, extract_xlsx_metadata, extract_pptx_metadata
+from shutil import move
 
 
 def move_file(source_path, destination_dir, categories):
@@ -70,26 +70,4 @@ def move_files(source_dir, destination_dir):
                 shift(source_path, destination_path)
                 counts['Folders'] += 1
 
-        for future in concurrent.futures.as_completed(futures):
-            category = future.result()
-            counts[category] += 1
-
-    # Print the summary of files moved
-    print("\n\nAll files sorted successfully!")
-    print("Folders moved:", counts['Folders'])
-    print("Images moved:", counts['Images'])
-    print("Text moved:", counts['Text'])
-    print("Videos moved:", counts['Videos'])
-    print("Code moved:", counts['Code'])
-    print("Others moved:", counts['Others'])
-
-
-def main():
-    source_dir = os.getcwd()
-    destination_dir = os.getcwd()
-
-    move_files(source_dir, destination_dir)
-
-
-if __name__ == "__main__":
-    main()
+        for future in concurrent.futures.as_completed
